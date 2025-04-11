@@ -1,7 +1,7 @@
 ﻿namespace RentIt.Domain.Common;
 public abstract class BaseEntity
 {
-    public Guid Id { get; protected set; } = Guid.NewGuid();
+    public string Id { get; protected set; } = Guid.NewGuid().ToString();
 
     public override bool Equals(object? obj)
     {
