@@ -1,0 +1,22 @@
+FROM microsoft/dotnet:2.2-sdk
+ARG BUILD_CONFIGURATION=Debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+EXPOSE 4295
+
+WORKDIR /src
+COPY ["Thunders.BI.API/Thunders.BI.API.csproj", "Thunders.BI.API/"]
+COPY ["Thunders.BI.Application.IntegrationEvents/Thunders.BI.Application.IntegrationEvents.csproj", "Thunders.BI.Application.IntegrationEvents/"]
+COPY ["Thunders.BI.Application/Thunders.BI.Application.csproj", "Thunders.BI.Application/"]
+COPY ["Thunders.BI.Domain.Core/Thunders.BI.Domain.Core.csproj", "Thunders.BI.Domain.Core/"]
+COPY ["Thunders.BI.Domain/Thunders.BI.Domain.csproj", "Thunders.BI.Domain/"]
+COPY ["Thunders.BI.Infra.CrossCutting/Thunders.BI.Infra.CrossCutting.csproj", "Thunders.BI.Infra.CrossCutting/"]
+COPY ["Thunders.BI.Infra.Data.Global/Thunders.BI.Infra.Data.Global.csproj", "Thunders.BI.Infra.Data.Global/"]
+COPY ["Thunders.BI.Infra.Data/Thunders.BI.Infra.Data.csproj", "Thunders.BI.Infra.Data/"]
+
+RUN dotnet restore "Thunders.BI.API/Thunders.BI.API.csproj"
+COPY . .
+WORKDIR "/src/Thunders.BI.API"
+RUN dotnet build --no-restore "Thunders.BI.API.csproj" -c $BUILD_CONFIGURATION
+
+ENTRYPOINT ["dotnet", "run", "--no-restore", "--no-build", "--no-launch-profile", "-c", "$BUILD_CONFIGURATION", "--"]
