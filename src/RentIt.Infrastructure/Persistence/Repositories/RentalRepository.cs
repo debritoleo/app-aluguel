@@ -8,9 +8,12 @@ public class RentalRepository : IRentalRepository
 {
     private readonly AppDbContext _context;
 
-    public RentalRepository(AppDbContext context)
+    public RentalRepository(AppDbContext context) => _context = context;
+
+    public async Task<Rental?> GetByIdAsync(string rentalId, CancellationToken cancellationToken = default)
     {
-        _context = context;
+        return await _context.Rentals
+            .FindAsync([rentalId, cancellationToken], cancellationToken);
     }
 
     public async Task AddAsync(Rental rental, CancellationToken cancellationToken = default)

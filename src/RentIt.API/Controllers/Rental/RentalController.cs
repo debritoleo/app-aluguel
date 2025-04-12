@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RentIt.Application.Commands.Rental;
+using RentIt.Application.Requests.Rental;
 using RentIt.Application.Services.Interfaces;
 
 namespace RentIt.API.Controllers.Rental;
@@ -21,6 +22,17 @@ public class RentalController : ControllerBase
             return BadRequest(new { erros = result.Errors });
 
         return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
+    }
+
+    [HttpPost("{id}/devolucao")]
+    public async Task<IActionResult> Return(string id, [FromBody] ReturnRentalRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _rentalService.ReturnAsync(id, request, cancellationToken);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { erros = result.Errors });
+
+        return Ok(new { valor_total = result.Value });
     }
 
     [HttpGet("{id}")]

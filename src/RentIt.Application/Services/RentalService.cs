@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using RentIt.Application.Commands.Rental;
 using RentIt.Application.Common;
+using RentIt.Application.Requests.Rental;
 using RentIt.Application.Services.Interfaces;
 using RentIt.Application.Validators;
 using RentIt.Domain.Aggregates.RentalAggregate;
@@ -51,5 +52,18 @@ public class RentalService : IRentalService
         await _rentalRepository.SaveChangesAsync(cancellationToken);
 
         return Result<string>.Success(rental.Id);
+    }
+
+    public async Task<Result<decimal>> ReturnAsync(string rentalId, ReturnRentalRequest request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(rentalId))
+            return Result<decimal>.Failure("Rental ID is required.");
+
+        var rental = await _rentalRepository.GetByIdAsync(rentalId, cancellationToken);
+        if (rental is null)
+            return Result<decimal>.Failure("Rental not found.");
+
+        var total = rental.CalculateTotalCost(request.ReturnDate);
+        return Result<decimal>.Success(total);
     }
 }

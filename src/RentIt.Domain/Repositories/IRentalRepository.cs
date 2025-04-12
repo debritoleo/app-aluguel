@@ -5,5 +5,7 @@ public interface IRentalRepository
 {
     Task AddAsync(Rental rental, CancellationToken cancellationToken = default);
     Task<bool> HasActiveRentalAsync(string deliverymanId, CancellationToken cancellationToken = default);
+    Task<Rental?> GetByIdAsync(string rentalId, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }
+
