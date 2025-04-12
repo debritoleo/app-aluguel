@@ -13,6 +13,11 @@ public class DeliverymanRepository : IDeliverymanRepository
         _context = context;
     }
 
+    public async Task<Deliveryman?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Deliverymen.FindAsync([id], cancellationToken);
+    }
+
     public async Task AddAsync(Deliveryman deliveryman, CancellationToken cancellationToken = default)
     {
         await _context.Deliverymen.AddAsync(deliveryman, cancellationToken);

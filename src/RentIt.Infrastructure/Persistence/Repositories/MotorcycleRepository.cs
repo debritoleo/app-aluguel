@@ -15,9 +15,9 @@ public class MotorcycleRepository : IMotorcycleRepository
         await _context.Motorcycles.AddAsync(motorcycle, cancellationToken);
     }
 
-    public async Task<Motorcycle?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Motorcycle?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
-        return await _context.Motorcycles.FindAsync([id], cancellationToken);
+        return await _context.Motorcycles.FindAsync([id, cancellationToken], cancellationToken: cancellationToken);
     }
 
     public async Task<Motorcycle?> GetByPlateAsync(string plate, CancellationToken cancellationToken = default)
