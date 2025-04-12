@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RentIt.Application.Commands.Rental;
+using RentIt.Application.Queries.Rental;
 using RentIt.Application.Requests.Rental;
 using RentIt.Application.Services.Interfaces;
 
@@ -10,8 +11,13 @@ namespace RentIt.API.Controllers.Rental;
 public class RentalController : ControllerBase
 {
     private readonly IRentalService _rentalService;
+    private readonly IRentalQueries _queries;
 
-    public RentalController(IRentalService rentalService) => _rentalService = rentalService;
+    public RentalController(IRentalService rentalService, IRentalQueries queries)
+    {
+        _rentalService = rentalService;
+        _queries = queries;
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateRentalRequest request, CancellationToken cancellationToken)
@@ -36,9 +42,13 @@ public class RentalController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(string id)
+    public async Task<IActionResult> GetById(string id)
     {
-        // Placeholder para consulta futura
-        return Ok();
+        var result = await _queries.GetByIdAsync(id);
+
+        if (result is null)
+            return NotFound(new { erros = new[] { "Locação não encontrada." } });
+
+        return Ok(result);
     }
 }

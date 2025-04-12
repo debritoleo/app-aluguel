@@ -10,6 +10,8 @@ using RentIt.Infrastructure;
 using RentIt.Application.Settings;
 using RentIt.Application.Commands.Rental;
 using RentIt.Application.Validators;
+using RentIt.Application.Queries.Motorcycle;
+using RentIt.Application.Queries.Rental;
 
 namespace RentIt.API.Extensions;
 
@@ -23,6 +25,9 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IDeliverymanService, DeliverymanService>();
         services.AddScoped<IMotorcycleService, MotorcycleService>();
+
+        services.AddScoped<IMotorcycleQueries, MotorcycleQueries>();
+        services.AddScoped<IRentalQueries, RentalQueries>();
 
         services.AddScoped<IValidator<CreateDeliverymanRequest>, CreateDeliverymanRequestValidator>();
         services.AddScoped<IValidator<CreateMotorcycleRequest>, CreateMotorcycleRequestValidator>();
