@@ -7,6 +7,7 @@ using RentIt.Domain.Repositories;
 using RentIt.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using RentIt.Infrastructure;
+using RentIt.Application.Settings;
 
 namespace RentIt.API.Extensions;
 
@@ -26,6 +27,11 @@ public static class DependencyInjectionExtensions
 
         services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        services.Configure<CnhStorageSettings>(
+            configuration.GetSection("CnhStorage"));
+
+        services.AddScoped<ICnhStorageService, LocalCnhStorageService>();
 
         return services;
     }
