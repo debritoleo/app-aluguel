@@ -12,6 +12,12 @@ using RentIt.Application.Commands.Rental;
 using RentIt.Application.Validators;
 using RentIt.Application.Queries.Motorcycle;
 using RentIt.Application.Queries.Rental;
+using RentIt.Infrastructure.Queries.Motorcycle;
+using RentIt.Infrastructure.Queries.Rental;
+using RentIt.Application.Messaging;
+using RentIt.Infrastructure.Messaging.Consumers;
+using RentIt.Infrastructure.Messaging.Handlers;
+using RentIt.IntegrationEvents.Motorcycle;
 
 namespace RentIt.API.Extensions;
 
@@ -36,6 +42,15 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRentalService, RentalService>();
         services.AddScoped<RentalCreationValidator>();
         services.AddScoped<IValidator<CreateRentalRequest>, CreateRentalRequestValidator>();
+
+        services.AddScoped<IIntegrationEventHandler<MotorcycleCreatedEvent>, MotorcycleCreatedEventHandler>();
+
+        services.AddHostedService(provider =>
+            new RabbitMqBackgroundConsumer<MotorcycleCreatedEvent>(
+                provider,
+                queueName: "motorcycles"
+            )
+        );
 
         services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));

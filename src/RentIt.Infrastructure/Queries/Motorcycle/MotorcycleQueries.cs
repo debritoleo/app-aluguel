@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RentIt.Application.ViewModels.Motorcycle;
-using RentIt.Infrastructure;
+﻿using RentIt.Application.ViewModels.Motorcycle;
 using System.Text;
 using Dapper;
+using RentIt.Application.Queries.Motorcycle;
+using Microsoft.EntityFrameworkCore;
 
-namespace RentIt.Application.Queries.Motorcycle;
-
+namespace RentIt.Infrastructure.Queries.Motorcycle;
 public class MotorcycleQueries : IMotorcycleQueries
 {
     private readonly AppDbContext _context;

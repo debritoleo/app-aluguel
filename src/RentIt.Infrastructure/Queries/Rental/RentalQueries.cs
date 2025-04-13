@@ -1,10 +1,9 @@
 ﻿using Dapper;
 using Microsoft.EntityFrameworkCore;
+using RentIt.Application.Queries.Rental;
 using RentIt.Application.ViewModels.Rental;
-using RentIt.Infrastructure;
 
-namespace RentIt.Application.Queries.Rental;
-
+namespace RentIt.Infrastructure.Queries.Rental;
 public class RentalQueries : IRentalQueries
 {
     private readonly AppDbContext _context;
