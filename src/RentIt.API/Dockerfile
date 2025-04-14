@@ -5,6 +5,7 @@ COPY ["RentIt.API/RentIt.API.csproj", "RentIt.API/"]
 COPY ["RentIt.Application/RentIt.Application.csproj", "RentIt.Application/"]
 COPY ["RentIt.Domain/RentIt.Domain.csproj", "RentIt.Domain/"]
 COPY ["RentIt.Infrastructure/RentIt.Infrastructure.csproj", "RentIt.Infrastructure/"]
+COPY ["RentIt.IntegrationEvents/RentIt.IntegrationEvents.csproj", "RentIt.IntegrationEvents/"]
 
 RUN dotnet restore "RentIt.API/RentIt.API.csproj"
 

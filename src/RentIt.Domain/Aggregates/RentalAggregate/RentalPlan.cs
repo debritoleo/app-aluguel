@@ -8,6 +8,8 @@ public class RentalPlan : ValueObject
     public decimal EarlyReturnPenaltyPercentage { get; }
     public decimal LateFeePerDay { get; } = 50.00m;
 
+    private RentalPlan() { }
+
     private RentalPlan(int days, decimal dailyRate, decimal earlyPenalty)
     {
         Days = days;

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RentIt.Domain\RentIt.Domain.csproj" />
+    <ProjectReference Include="..\RentIt.IntegrationEvents\RentIt.IntegrationEvents.csproj" />
   </ItemGroup>
 
 </Project>

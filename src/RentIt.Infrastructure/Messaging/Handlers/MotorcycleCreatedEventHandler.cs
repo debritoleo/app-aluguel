@@ -14,8 +14,8 @@ public class MotorcycleCreatedEventHandler : IIntegrationEventHandler<Motorcycle
 
     public async Task HandleAsync(MotorcycleCreatedEvent @event, CancellationToken cancellationToken)
     {
-        if (@event.Year == 2024)
-        {
+        //if (@event.Year == 2024)
+        //{
             //_context.Motorcycles2024.Add(new Motorcycle2024Log
             //{
             //    MotorcycleId = @event.Id,
@@ -23,7 +23,7 @@ public class MotorcycleCreatedEventHandler : IIntegrationEventHandler<Motorcycle
             //    CreatedAt = DateTime.UtcNow
             //});
 
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        //    await _context.SaveChangesAsync(cancellationToken);
+        //}
     }
 }

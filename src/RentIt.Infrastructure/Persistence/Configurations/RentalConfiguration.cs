@@ -11,8 +11,8 @@ public class RentalConfiguration : IEntityTypeConfiguration<Rental>
 
         builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.MotorcycleId).IsRequired();
-        builder.Property(r => r.DeliverymanId).IsRequired();
+        builder.Property(r => r.MotorcycleId).HasMaxLength(36).IsRequired();
+        builder.Property(r => r.DeliverymanId).HasMaxLength(36).IsRequired();
 
         builder.OwnsOne(r => r.Period, p =>
         {

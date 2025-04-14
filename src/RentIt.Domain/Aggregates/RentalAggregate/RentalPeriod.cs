@@ -8,6 +8,8 @@ public class RentalPeriod : ValueObject
     public DateTime EndDate { get; }
     public DateTime ExpectedEndDate { get; }
 
+    private RentalPeriod() { }    
+
     public RentalPeriod(DateTime now, DateTime endDate, DateTime expectedEndDate)
     {
         StartDate = now.Date.AddDays(1);
