@@ -1,4 +1,4 @@
-# RentIt - Motorcycle Rental API
+﻿# RentIt - Motorcycle Rental API
 
 Sistema de gerenciamento de aluguel de motos e entregadores.
 
