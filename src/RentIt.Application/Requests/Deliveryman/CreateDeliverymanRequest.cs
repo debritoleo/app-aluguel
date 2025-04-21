@@ -1,22 +1,24 @@
-﻿using RentIt.Domain.Aggregates.DeliverymanAggregate;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace RentIt.Application.Commands.Deliveryman;
+namespace RentIt.Application.Requests.Deliveryman;
 
 public class CreateDeliverymanRequest
 {
-    public string Identificador { get; set; } = string.Empty;
+    [JsonPropertyName("identificador")]
+    public string Identifier { get; set; } = string.Empty;
 
-    public string Nome { get; set; } = string.Empty;
+    [JsonPropertyName("nome")]
+    public string Name { get; set; } = string.Empty;
 
+    [JsonPropertyName("cnpj")]
     public string Cnpj { get; set; } = string.Empty;
 
     [JsonPropertyName("data_nascimento")]
-    public DateTime DataNascimento { get; set; }
+    public DateTime BirthDate { get; set; }
 
     [JsonPropertyName("numero_cnh")]
-    public string NumeroCnh { get; set; } = string.Empty;
+    public string CnhNumber { get; set; } = string.Empty;
 
     [JsonPropertyName("tipo_cnh")]
-    public CnhType TipoCnh { get; set; }
+    public string CnhType { get; set; } = string.Empty;
 }

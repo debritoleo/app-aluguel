@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using RentIt.Application.Commands.Deliveryman;
 using RentIt.Application.Common;
+using RentIt.Application.Requests.Deliveryman;
 using RentIt.Application.Services.Interfaces;
 using RentIt.Domain.Aggregates.DeliverymanAggregate;
 using RentIt.Domain.Repositories;
@@ -13,9 +13,10 @@ public class DeliverymanService : IDeliverymanService
     private readonly IValidator<CreateDeliverymanRequest> _validator;
     private readonly TimeProvider _timeProvider;
 
-    public DeliverymanService(IDeliverymanRepository repository,
-                               IValidator<CreateDeliverymanRequest> validator,
-                               TimeProvider timeProvider)
+    public DeliverymanService(
+        IDeliverymanRepository repository,
+        IValidator<CreateDeliverymanRequest> validator,
+        TimeProvider timeProvider)
     {
         _repository = repository;
         _validator = validator;
@@ -31,22 +32,22 @@ public class DeliverymanService : IDeliverymanService
         if (await _repository.CnpjExistsAsync(request.Cnpj, cancellationToken))
             return Result<string>.Failure("CNPJ já cadastrado.");
 
-        if (await _repository.CnhNumberExistsAsync(request.NumeroCnh, cancellationToken))
+        if (await _repository.CnhNumberExistsAsync(request.CnhNumber, cancellationToken))
             return Result<string>.Failure("Número da CNH já cadastrado.");
 
-        var birthDate = new BirthDate(request.DataNascimento);
+        var birthDate = new BirthDate(request.BirthDate);
         var now = _timeProvider.GetUtcNow().UtcDateTime;
 
         if (!birthDate.IsAdult(now))
             return Result<string>.Failure("O entregador deve ter pelo menos 18 anos.");
 
         var deliveryman = new Deliveryman(
-            request.Identificador,
-            request.Nome,
+            request.Identifier,
+            request.Name,
             new Cnpj(request.Cnpj),
             birthDate,
-            new CnhNumber(request.NumeroCnh),
-            request.TipoCnh,
+            new CnhNumber(request.CnhNumber),
+            CnhType.FromName(request.CnhType),
             now
         );
 

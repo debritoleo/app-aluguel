@@ -1,6 +1,59 @@
 @RentIt.API_HostAddress = http://localhost:5051
+@entregadorId = {{id}}
+@motoId = {{id}}
+@locacaoId = {{id}}
 
-GET {{RentIt.API_HostAddress}}/weatherforecast/
+### Criar entregador
+POST {{RentIt.API_HostAddress}}/entregadores
+Content-Type: application/json
+
+{
+  "identificador": "entregador125",
+  "nome": "João da Silva",
+  "cnpj": "12345678901256",
+  "data_nascimento": "1990-01-01T00:00:00Z",
+  "numero_cnh": "12345678956",
+  "tipo_cnh": "A"
+}
+
+### Upload da CNH (base64 válido)
+POST {{RentIt.API_HostAddress}}/entregadores/3c5b0bd2-8ab4-4b5d-ba4b-018e3c5c087a/cnh
+Content-Type: application/json
+
+{
+  "imagem_cnh": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR42mMAAQAABQABDQottAAAAABJRU5ErkJggg=="
+}
+
+### Criar moto
+POST {{RentIt.API_HostAddress}}/motos
+Content-Type: application/json
+
+{
+  "identificador": "MOTO-03",
+  "modelo": "CG 160",
+  "ano": 2024,
+  "placa": "ABC1236"
+}
+
+### Obter moto por ID
+GET {{RentIt.API_HostAddress}}/motos/{{motoId}}
 Accept: application/json
 
-###
+### Obter todas as motos
+GET {{RentIt.API_HostAddress}}/motos
+Accept: application/json
+
+### Criar locação (exemplo com 7 dias)
+POST {{RentIt.API_HostAddress}}/locacoes
+Content-Type: application/json
+
+{
+  "deliverymanId": "{{entregadorId}}",
+  "motorcycleId": "{{motoId}}",
+  "expectedEndDate": "2024-04-23T00:00:00Z",
+  "endDate": "2024-04-23T00:00:00Z"
+}
+
+### Obter locação por ID
+GET {{RentIt.API_HostAddress}}/locacoes/{{locacaoId}}
+Accept: application/json

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using RentIt.Domain.Aggregates.RentalAggregate;
 
-namespace RentIt.Infrastructure.Persistence.Configurations;
 public class RentalConfiguration : IEntityTypeConfiguration<Rental>
 {
     public void Configure(EntityTypeBuilder<Rental> builder)
@@ -16,9 +15,26 @@ public class RentalConfiguration : IEntityTypeConfiguration<Rental>
 
         builder.OwnsOne(r => r.Period, p =>
         {
-            p.Property(x => x.StartDate).HasColumnName("start_date").IsRequired();
-            p.Property(x => x.EndDate).HasColumnName("end_date").IsRequired();
-            p.Property(x => x.ExpectedEndDate).HasColumnName("expected_end_date").IsRequired();
+            p.Property(x => x.StartDate)
+                .HasColumnName("start_date")
+                .HasConversion(
+                    v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                .IsRequired();
+
+            p.Property(x => x.EndDate)
+                .HasColumnName("end_date")
+                .HasConversion(
+                    v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                .IsRequired();
+
+            p.Property(x => x.ExpectedEndDate)
+                .HasColumnName("expected_end_date")
+                .HasConversion(
+                    v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+                .IsRequired();
         });
 
         builder.OwnsOne(r => r.Plan, p =>

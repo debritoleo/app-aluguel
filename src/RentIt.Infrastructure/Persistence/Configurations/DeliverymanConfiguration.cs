@@ -19,6 +19,9 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
             .HasMaxLength(150);
 
         builder.Property(x => x.CnhType)
+            .HasConversion(
+                cnhType => cnhType.Id,   
+                value => CnhType.FromId(value))   
             .IsRequired();
 
         builder.OwnsOne(x => x.Cnpj, cnpj =>
@@ -45,6 +48,9 @@ public class DeliverymanConfiguration : IEntityTypeConfiguration<Deliveryman>
         {
             bd.Property(b => b.Value)
               .HasColumnName("BirthDate")
+              .HasConversion(
+                  v => v.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(v, DateTimeKind.Utc) : v.ToUniversalTime(),
+                  v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
               .IsRequired();
         });
     }

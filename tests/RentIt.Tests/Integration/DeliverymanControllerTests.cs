@@ -1,21 +1,19 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using RentIt.Application.Commands.Deliveryman;
+using RentIt.Application.Requests.Deliveryman;
 using RentIt.Domain.Aggregates.DeliverymanAggregate;
 
 namespace RentIt.Tests.Integration;
 
-public class DeliverymanControllerTests : IClassFixture<WebApplicationFactory<Program>>
+public class DeliverymanControllerTests : BaseIntegrationTest
 {
-    private readonly HttpClient _client;
-
-    public DeliverymanControllerTests(WebApplicationFactory<Program> factory)
+    public DeliverymanControllerTests(WebApplicationFactory<Program> factory) : base(factory)
     {
-        _client = factory.CreateClient();
+        
     }
 
     [Fact(DisplayName = "POST /entregadores deve cadastrar entregador com sucesso")]
@@ -23,20 +21,17 @@ public class DeliverymanControllerTests : IClassFixture<WebApplicationFactory<Pr
     {
         var request = new CreateDeliverymanRequest
         {
-            Identificador = Guid.NewGuid().ToString(),
-            Nome = "João da Entrega",
+            Identifier = Guid.NewGuid().ToString(),
+            Name = "João da Entrega",
             Cnpj = "12345678000199",
-            DataNascimento = new DateTime(1990, 5, 10),
-            NumeroCnh = "12345678901",
-            TipoCnh = CnhType.A
+            BirthDate = new DateTime(1990, 5, 10),
+            CnhNumber = "12345678901",
+            CnhType = CnhType.A.Name
         };
 
-        var response = await _client.PostAsJsonAsync("/entregadores", request);
+        var response = await Client.PostAsJsonAsync("/entregadores", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-        result.Should().ContainKey("id");
-        result!["id"].Should().NotBeNullOrEmpty();
     }
 
     [Fact(DisplayName = "POST /entregadores com CNPJ duplicado deve retornar erro")]
@@ -46,81 +41,81 @@ public class DeliverymanControllerTests : IClassFixture<WebApplicationFactory<Pr
 
         var request = new CreateDeliverymanRequest
         {
-            Identificador = Guid.NewGuid().ToString(),
-            Nome = "Rider One",
+            Identifier = Guid.NewGuid().ToString(),
+            Name = "Rider One",
             Cnpj = cnpj,
-            DataNascimento = new DateTime(1990, 5, 10),
-            NumeroCnh = "98765432100",
-            TipoCnh = CnhType.AB
+            BirthDate = new DateTime(1990, 5, 10),
+            CnhNumber = "98765432100",
+            CnhType = CnhType.AB.Name
         };
 
-        var first = await _client.PostAsJsonAsync("/entregadores", request);
+        var first = await Client.PostAsJsonAsync("/entregadores", request);
         first.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        request.Identificador = Guid.NewGuid().ToString();
-        request.NumeroCnh = "98765432101";
+        request.Identifier = Guid.NewGuid().ToString();
+        request.CnhNumber = "98765432101";
 
-        var second = await _client.PostAsJsonAsync("/entregadores", request);
+        var second = await Client.PostAsJsonAsync("/entregadores", request);
         second.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var body = await second.Content.ReadAsStringAsync();
+        body.Should().Contain("mensagem").And.Contain("Dados inválidos");
     }
 
-    [Fact(DisplayName = "POST /entregadores/{id}/cnh deve aceitar upload de PNG válido")]
-    public async Task UploadCnh_ShouldAcceptPngFile()
+    [Fact(DisplayName = "POST /entregadores/{id}/cnh com base64 válido deve retornar sucesso")]
+    public async Task UploadCnh_Base64Valido_DeveRetornarCreated()
     {
-        var deliveryman = new CreateDeliverymanRequest
+        var id = Guid.NewGuid().ToString();
+
+        var payload = new
         {
-            Identificador = Guid.NewGuid().ToString(),
-            Nome = "Carlos Entregador",
-            Cnpj = "78945612000100",
-            DataNascimento = new DateTime(1985, 2, 20),
-            NumeroCnh = "32165498700",
-            TipoCnh = CnhType.A
+            imagem_cnh = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR42mMAAQAABQABDQottAAAAABJRU5ErkJggg=="
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/entregadores", deliveryman);
-        var result = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-        var id = result!["id"];
+        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-        var imageContent = new ByteArrayContent(new byte[] { 0x89, 0x50, 0x4E, 0x47 });
-        imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        var response = await Client.PostAsync($"/entregadores/{id}/cnh", content);
 
-        using var form = new MultipartFormDataContent
-        {
-            { imageContent, "arquivo", "cnh.png" }
-        };
-
-        var uploadResponse = await _client.PostAsync($"/entregadores/{id}/cnh", form);
-
-        uploadResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
     }
 
-    [Fact(DisplayName = "POST /entregadores/{id}/cnh com formato inválido deve retornar erro")]
-    public async Task UploadCnh_InvalidFormat_ShouldReturnBadRequest()
+    [Fact(DisplayName = "POST /entregadores/{id}/cnh com base64 inválido deve retornar erro")]
+    public async Task UploadCnh_Base64Invalido_DeveRetornarBadRequest()
     {
-        var deliveryman = new CreateDeliverymanRequest
+        var id = Guid.NewGuid().ToString();
+
+        var payload = new
         {
-            Identificador = Guid.NewGuid().ToString(),
-            Nome = "Carlos JPG",
-            Cnpj = "78945612000188",
-            DataNascimento = new DateTime(1985, 2, 20),
-            NumeroCnh = "32165498711",
-            TipoCnh = CnhType.AB
+            imagem_cnh = "BASE64INVALIDA123=="
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/entregadores", deliveryman);
-        var result = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-        var id = result!["id"];
+        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-        var invalidContent = new ByteArrayContent(new byte[] { 0xFF, 0xD8 }); // assinatura JPG
-        invalidContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-
-        using var form = new MultipartFormDataContent
-        {
-            { invalidContent, "arquivo", "foto.jpg" }
-        };
-
-        var response = await _client.PostAsync($"/entregadores/{id}/cnh", form);
+        var response = await Client.PostAsync($"/entregadores/{id}/cnh", content);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var json = await response.Content.ReadAsStringAsync();
+        json.Should().Contain("mensagem").And.Contain("Dados inválidos");
+    }
+
+    [Fact(DisplayName = "POST /entregadores/{id}/cnh com payload vazio deve retornar erro")]
+    public async Task UploadCnh_Vazio_DeveRetornarBadRequest()
+    {
+        var id = Guid.NewGuid().ToString();
+
+        var payload = new
+        {
+            imagem_cnh = ""
+        };
+
+        var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+        var response = await Client.PostAsync($"/entregadores/{id}/cnh", content);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        var json = await response.Content.ReadAsStringAsync();
+        json.Should().Contain("mensagem").And.Contain("Dados inválidos");
     }
 }

@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Arquivos de upload locais (como CNHs)
+**/storage/
+**/*.png
+**/*.bmp
+

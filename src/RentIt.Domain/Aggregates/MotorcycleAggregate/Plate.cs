@@ -11,10 +11,10 @@ public sealed class Plate : ValueObject
     public Plate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("Plate cannot be empty.");
+            throw new ArgumentException("A placa deve ser informada.");
 
         if (value.Length > 10)
-            throw new ArgumentException("Plate cannot exceed 10 characters.");
+            throw new ArgumentException("A placa não pode exceder 10 caracteres.");
 
         Value = value.ToUpperInvariant();
     }

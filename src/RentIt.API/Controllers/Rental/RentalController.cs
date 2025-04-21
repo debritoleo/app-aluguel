@@ -25,20 +25,20 @@ public class RentalController : ControllerBase
         var result = await _rentalService.CreateAsync(request, cancellationToken);
 
         if (!result.IsSuccess)
-            return BadRequest(new { erros = result.Errors });
+            return BadRequest(new { mensagem = "Dados inválidos" });
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
+        return Created(nameof(GetById), new { id = result.Value });
     }
 
-    [HttpPost("{id}/devolucao")]
+    [HttpPut("{id}/devolucao")]
     public async Task<IActionResult> Return(string id, [FromBody] ReturnRentalRequest request, CancellationToken cancellationToken)
     {
         var result = await _rentalService.ReturnAsync(id, request, cancellationToken);
 
         if (!result.IsSuccess)
-            return BadRequest(new { erros = result.Errors });
+            return BadRequest(new { mensagem = "Dados inválidos" });
 
-        return Ok(new { valor_total = result.Value });
+        return Ok(new { mensagem = "Data de devolução informada com sucesso" });
     }
 
     [HttpGet("{id}")]
@@ -47,7 +47,7 @@ public class RentalController : ControllerBase
         var result = await _queries.GetByIdAsync(id);
 
         if (result is null)
-            return NotFound(new { erros = new[] { "Locação não encontrada." } });
+            return NotFound(new { mensagem = "Locação não encontrada." });
 
         return Ok(result);
     }

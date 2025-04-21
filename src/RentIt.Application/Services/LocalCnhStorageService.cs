@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using RentIt.Application.Services.Interfaces;
 using RentIt.Application.Settings;
 
@@ -17,19 +16,31 @@ public class LocalCnhStorageService : ICnhStorageService
             Directory.CreateDirectory(_basePath);
     }
 
-    public async Task<string> SaveAsync(Guid deliverymanId, IFormFile file, CancellationToken cancellationToken = default)
+    public async Task<string> SaveBase64Async(Guid deliverymanId, string base64Content, CancellationToken cancellationToken = default)
     {
-        var extension = Path.GetExtension(file.FileName).ToLower();
+        byte[] fileBytes;
 
-        if (extension != ".png" && extension != ".bmp")
-            throw new InvalidOperationException("Formato inválido. Apenas PNG ou BMP são permitidos.");
+        try
+        {
+            fileBytes = Convert.FromBase64String(base64Content);
+        }
+        catch
+        {
+            throw new InvalidOperationException("Dados inválidos");
+        }
 
-        var fileName = $"{deliverymanId}{extension}";
+        var fileName = $"{deliverymanId}_{DateTime.UtcNow:yyyyMMdd_HHmmss_fff}.png";
+
         var fullPath = Path.Combine(_basePath, fileName);
 
-        using var stream = new FileStream(fullPath, FileMode.Create);
-        await file.CopyToAsync(stream, cancellationToken);
-
-        return fileName;
+        try
+        {
+            await File.WriteAllBytesAsync(fullPath, fileBytes, cancellationToken);
+            return fileName;
+        }
+        catch
+        {
+            throw new InvalidOperationException("Dados inválidos");
+        }
     }
 }

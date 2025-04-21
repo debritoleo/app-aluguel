@@ -2,7 +2,6 @@
 using RentIt.Application.Commands.Motorcycle;
 using RentIt.Application.Queries.Motorcycle;
 using RentIt.Application.Services.Interfaces;
-using RentIt.Application.ViewModels;
 using RentIt.Application.ViewModels.Motorcycle;
 
 namespace RentIt.API.Controllers.Motorcycle;
@@ -26,9 +25,9 @@ public class MotorcycleController : ControllerBase
         var result = await _service.CreateAsync(request, cancellationToken);
 
         if (!result.IsSuccess)
-            return BadRequest(new { erros = result.Errors });
+            return BadRequest(new { mensagem = "Dados inválidos" });
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
+        return Created(nameof(GetById), new { id = result.Value });
     }
 
     [HttpGet]

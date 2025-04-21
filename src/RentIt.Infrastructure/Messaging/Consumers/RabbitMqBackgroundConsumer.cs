@@ -12,8 +12,8 @@ public class RabbitMqBackgroundConsumer<TEvent> : BackgroundService where TEvent
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly string _queueName;
-    private IConnection _connection;
-    private IModel _channel;
+    private readonly IConnection _connection;
+    private readonly IModel _channel;
 
     public RabbitMqBackgroundConsumer(IServiceProvider serviceProvider, string queueName)
     {
@@ -30,7 +30,7 @@ public class RabbitMqBackgroundConsumer<TEvent> : BackgroundService where TEvent
 
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.QueueDeclare(_queueName, true, false, false, null);
+        _channel.QueueDeclare(_queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,7 +41,11 @@ public class RabbitMqBackgroundConsumer<TEvent> : BackgroundService where TEvent
             try
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var message = JsonSerializer.Deserialize<TEvent>(json);
+
+                var message = JsonSerializer.Deserialize<TEvent>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
                 if (message != null)
                 {
@@ -50,11 +54,12 @@ public class RabbitMqBackgroundConsumer<TEvent> : BackgroundService where TEvent
                     await handler.HandleAsync(message, stoppingToken);
                 }
 
-                _channel.BasicAck(ea.DeliveryTag, false);
+                _channel.BasicAck(ea.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
             {
-                // logar erro se necessário
+                Console.WriteLine($"Erro ao processar mensagem RabbitMQ: {ex.Message}");
+                // Aqui em um cenário real, seria enviado para uma dead letter, retries, etc...
             }
         };
 
@@ -67,6 +72,7 @@ public class RabbitMqBackgroundConsumer<TEvent> : BackgroundService where TEvent
     {
         _channel?.Dispose();
         _connection?.Dispose();
+        GC.SuppressFinalize(this);
         base.Dispose();
     }
 }

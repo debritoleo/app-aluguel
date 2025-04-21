@@ -31,14 +31,14 @@ public class MotorcycleService : IMotorcycleService
         if (!validation.IsValid)
             return Result<string>.Failure(validation.Errors.Select(e => e.ErrorMessage));
 
-        if (await _repository.PlateExistsAsync(request.Placa, cancellationToken))
+        if (await _repository.PlateExistsAsync(request.Plate, cancellationToken))
             return Result<string>.Failure("Placa já cadastrada.");
 
         var motorcycle = new Motorcycle(
-            request.Identificador,
-            request.Ano,
-            request.Modelo,
-            new Plate(request.Placa)
+            request.Identifier,
+            request.Year,
+            request.Model,
+            new Plate(request.Plate)
         );
 
         await _repository.AddAsync(motorcycle, cancellationToken);

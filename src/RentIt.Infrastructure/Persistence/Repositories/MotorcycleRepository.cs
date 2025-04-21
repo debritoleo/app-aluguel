@@ -23,12 +23,12 @@ public class MotorcycleRepository : IMotorcycleRepository
     public async Task<Motorcycle?> GetByPlateAsync(string plate, CancellationToken cancellationToken = default)
     {
         return await _context.Motorcycles
-            .FirstOrDefaultAsync(x => x.Plate.Value.Equals(plate, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+                .FirstOrDefaultAsync(m => m.Plate.Value.ToLower() == plate.ToLower(), cancellationToken);
     }
 
     public async Task<bool> PlateExistsAsync(string plate, CancellationToken cancellationToken = default)
     {
-        return await _context.Motorcycles.AnyAsync(x => x.Plate.Value.Equals(plate, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+        return await _context.Motorcycles.AnyAsync(m => m.Plate.Value.ToLower() == plate.ToLower());
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -9,7 +9,8 @@ public static class MigrationManager
     public static void ApplyMigrations(IServiceProvider services)
     {
         using var scope = services.CreateScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<MigrationLogger>>();
+
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         try
@@ -25,3 +26,6 @@ public static class MigrationManager
         }
     }
 }
+
+public class MigrationLogger { }
+

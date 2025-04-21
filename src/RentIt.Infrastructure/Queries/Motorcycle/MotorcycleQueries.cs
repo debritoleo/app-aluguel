@@ -19,26 +19,27 @@ public class MotorcycleQueries : IMotorcycleQueries
         var conn = _context.Database.GetDbConnection();
 
         var sql = new StringBuilder(@"
-            SELECT id, identifier, year, model, plate
+            SELECT *
             FROM motorcycles
         ");
 
         if (!string.IsNullOrWhiteSpace(plate))
         {
-            sql.AppendLine("WHERE plate = @plate");
+            sql.AppendLine("WHERE Plate = @plate");
         }
 
         return await conn.QueryAsync<MotorcycleViewModel>(sql.ToString(), new { plate });
     }
+
 
     public async Task<MotorcycleViewModel?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         var conn = _context.Database.GetDbConnection();
 
         const string sql = @"
-            SELECT id, identifier, year, model, plate
+            SELECT *
             FROM motorcycles
-            WHERE id = @id
+            WHERE ""Id"" = @id
         ";
 
         return await conn.QueryFirstOrDefaultAsync<MotorcycleViewModel>(sql, new { id });

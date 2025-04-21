@@ -5,10 +5,10 @@ public class CreateMotorcycleRequestValidator : AbstractValidator<CreateMotorcyc
 {
     public CreateMotorcycleRequestValidator()
     {
-        RuleFor(x => x.Identificador).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.Ano).InclusiveBetween(2000, DateTime.UtcNow.Year + 1);
-        RuleFor(x => x.Modelo).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.Placa).NotEmpty().MaximumLength(10);
+        RuleFor(x => x.Identifier).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Year).InclusiveBetween(2000, DateTime.UtcNow.Year + 1);
+        RuleFor(x => x.Model).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Plate).NotEmpty().MaximumLength(10);
     }
 }
 

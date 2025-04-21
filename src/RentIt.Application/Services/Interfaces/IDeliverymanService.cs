@@ -1,5 +1,5 @@
-﻿using RentIt.Application.Commands.Deliveryman;
-using RentIt.Application.Common;
+﻿using RentIt.Application.Common;
+using RentIt.Application.Requests.Deliveryman;
 
 namespace RentIt.Application.Services.Interfaces;
 

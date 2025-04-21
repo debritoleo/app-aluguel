@@ -1,13 +1,19 @@
-﻿namespace RentIt.Application.Commands.Motorcycle;
+﻿using System.Text.Json.Serialization;
+
+namespace RentIt.Application.Commands.Motorcycle;
 
 public class CreateMotorcycleRequest
 {
-    public string Identificador { get; set; } = string.Empty;
+    [JsonPropertyName("identificador")]
+    public string Identifier { get; set; } = string.Empty;
 
-    public int Ano { get; set; }
+    [JsonPropertyName("ano")]
+    public int Year { get; set; }
 
-    public string Modelo { get; set; } = string.Empty;
+    [JsonPropertyName("modelo")]
+    public string Model { get; set; } = string.Empty;
 
-    public string Placa { get; set; } = string.Empty;
+    [JsonPropertyName("placa")]
+    public string Plate { get; set; } = string.Empty;
 }
 

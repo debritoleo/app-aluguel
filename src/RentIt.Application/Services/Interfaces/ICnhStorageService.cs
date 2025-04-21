@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿namespace RentIt.Application.Services.Interfaces;
 
-namespace RentIt.Application.Services.Interfaces;
 public interface ICnhStorageService
 {
-    Task<string> SaveAsync(Guid deliverymanId, IFormFile file, CancellationToken cancellationToken = default);
+    Task<string> SaveBase64Async(Guid deliverymanId, string base64Content, CancellationToken cancellationToken = default);
 }
